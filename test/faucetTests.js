@@ -10,9 +10,9 @@ describe('Faucet', function () {
     const faucet = await Faucet.deploy();
 
     const [owner] = await ethers.getSigners();
+
     let withdrawAmount = ethers.utils.parseUnits('1', 'ether');
 
-    console.log('Signer 1 address: ', owner.address);
     return { faucet, owner, withdrawAmount };
   }
 
@@ -29,5 +29,9 @@ describe('Faucet', function () {
     await expect(faucet.withdraw(withdrawAmount)).to.be.reverted;
   });
 
-  
+  it('allows the owner to destroy the faucet', async function () {
+    const { faucet } = await loadFixture(deployContractAndSetVariables);
+    await faucet.destroyFaucet();
+    expect(await ethers.provider.getCode(faucet.address)).to.equal('0x');
+  });
 });
